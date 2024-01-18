@@ -14,7 +14,10 @@ source("R/plot_utils.R")
 update_cache <- TRUE
 
 
-caption <- "Mynd eftir @bggjonsson hjá metill.is byggð á gögnum Eurostat um fólksflutninga: https://metill.is/greinar/flottafolk\nGögn og kóði: https://github.com/bgautijonsson/Metill.is/tree/master/greinar/flottafolk"
+caption <- str_c(
+  "Mynd eftir @bggjonsson hjá metill.is byggð á gögnum Eurostat um fólksflutninga.",
+  "\nGögn og kóði: https://github.com/bgautijonsson/asylum"
+)
 
 litur_island <- "#08306b"
 litur_danmork <- "#e41a1c"
@@ -23,78 +26,78 @@ litur_noregur <- "#7f0000"
 litur_svithjod <- "#fd8d3c"
 litur_annad <- "#737373"
 
-# applicants <- read_csv("data/applicants.csv") |> 
-#   rename(time = TIME_PERIOD) |> 
-#   filter(
-#     sex == "Total",
-#     age == "Total",
-#     year(time) == 2022,
-#     asyl_app == "Asylum applicant",
-#     geo != "European Union - 27 countries (from 2020)"
-#   ) |> 
-#   select(
-#     -freq, -sex, -unit, -age, -asyl_app, -time
-#   ) |> 
-#   rename(
-#     applicants = values
-#   )
-# 
-# pop <- read_csv("data/pop.csv") |> 
-#   rename(time = TIME_PERIOD) |> 
-#   filter(
-#     sex == "Total",
-#     age == "Total",
-#     year(time) == 2022
-#   ) |> 
-#   select(
-#     -freq, -sex, -unit, -age, -time
-#   ) |> 
-#   rename(pop = values)
-# 
-# 
-# d <- applicants |> 
-#   inner_join(
-#     pop,
-#     by = join_by(geo)
-#   ) |> 
-#   inner_join(
-#     metill::country_names(),
-#     by = join_by(geo == country)
-#   ) |> 
-#   select(land, citizen, applicants, pop) |> 
-#   filter(
-#     citizen %in% c(
-#       "Ukraine",
-#       "Palestine*",
-#       "Venezuela",
-#       "Total"
-#     )
-#   ) |> 
-#   mutate(
-#     citizen = str_replace(citizen, "\\*", "") |> 
-#       as_factor() |> 
-#       fct_recode(
-#         "Palestína" = "Palestine",
-#         "Úkraína" = "Ukraine",
-#         "Venesúela" = "Venezuela",
-#         "Samtals" = "Total"
-#       )
-#   ) |> 
-#   mutate(
-#     per_pop = applicants / pop * 1e5
-#   ) |> 
-#   mutate(
-#     colour = case_when(
-#       land == "Ísland" ~ litur_island,
-#       land == "Danmörk" ~ litur_danmork,
-#       land == "Finnland" ~ litur_finnland,
-#       land == "Noregur" ~ litur_noregur,
-#       land == "Svíþjóð" ~ litur_svithjod,
-#       TRUE ~ litur_annad
-#     ),
-#     linewidth = 1 * (land == "Ísland"),
-#     size = as_factor(linewidth)
-#   )
+applicants <- read_csv("data/applicants.csv") |>
+  rename(time = TIME_PERIOD) |>
+  filter(
+    sex == "Total",
+    age == "Total",
+    year(time) == 2022,
+    asyl_app == "Asylum applicant",
+    geo != "European Union - 27 countries (from 2020)"
+  ) |>
+  select(
+    -freq, -sex, -unit, -age, -asyl_app, -time
+  ) |>
+  rename(
+    applicants = values
+  )
+
+pop <- read_csv("data/pop.csv") |>
+  rename(time = TIME_PERIOD) |>
+  filter(
+    sex == "Total",
+    age == "Total",
+    year(time) == 2022
+  ) |>
+  select(
+    -freq, -sex, -unit, -age, -time
+  ) |>
+  rename(pop = values)
+
+
+d <- applicants |>
+  inner_join(
+    pop,
+    by = join_by(geo)
+  ) |>
+  inner_join(
+    metill::country_names(),
+    by = join_by(geo == country)
+  ) |>
+  select(land, citizen, applicants, pop) |>
+  filter(
+    citizen %in% c(
+      "Ukraine",
+      "Palestine*",
+      "Venezuela",
+      "Total"
+    )
+  ) |>
+  mutate(
+    citizen = str_replace(citizen, "\\*", "") |>
+      as_factor() |>
+      fct_recode(
+        "Palestína" = "Palestine",
+        "Úkraína" = "Ukraine",
+        "Venesúela" = "Venezuela",
+        "Samtals" = "Total"
+      )
+  ) |>
+  mutate(
+    per_pop = applicants / pop * 1e5
+  ) |>
+  mutate(
+    colour = case_when(
+      land == "Ísland" ~ litur_island,
+      land == "Danmörk" ~ litur_danmork,
+      land == "Finnland" ~ litur_finnland,
+      land == "Noregur" ~ litur_noregur,
+      land == "Svíþjóð" ~ litur_svithjod,
+      TRUE ~ litur_annad
+    ),
+    linewidth = 1 * (land == "Ísland"),
+    size = as_factor(linewidth)
+  )
 
 
 #### Samtals ####
@@ -203,21 +206,25 @@ p_tot <- p_tot1 +
   ) 
 
 subtitle <- str_c(
-  str_wrap(
-    str_c(
-      "Ísland hefur tekið við mun fleiri umsóknum um alþjóðlega vernd en aðrar þjóðir. ",
-      "Frá hvaða löndum koma þessar umsóknir helst? Fáum við fleiri umsóknir frá öllum löndum eða bara fáum?"
-    ),
-    width = 165
-  ),
-  "\n\nTölur eru sýndar sem fjöldi á 100.000 íbúa komulands."
-  )
+  "Ísland hefur tekið við mun fleiri umsóknum um alþjóðlega vernd en aðrar þjóðir. ",
+  "Frá hvaða löndum koma þessar umsóknir helst? Fáum við fleiri umsóknir frá öllum<br>löndum eða bara fáum? ",
+  "Í neðri röðinni sjáum við fjölda umsókna frá þremur löndum: Úkraínu, Venesúela og Palestínu. ",
+  "Efri röðin sýnir svo fjölda umsókna alls auk<br>þess að sýna fjölda umsókna að frádregnum löndunum þremur. ",
+  "\n\n<em style='font-size:14px;font-weight:300;'>Tölur eru sýndar sem fjöldi á 100.000 íbúa komulands.</em>"
+)
 
 p <- p_tot /
   p_countries +
   plot_annotation(
     title = "Umsækjendur um tímabundna vernd eftir upprunalandi (2022)",
-    subtitle = subtitle
+    subtitle = subtitle,
+    caption = caption, 
+    theme = theme(
+      plot.subtitle = element_markdown(
+        family = "Lato",
+        size = 14
+      )
+    )
   )
 
 
