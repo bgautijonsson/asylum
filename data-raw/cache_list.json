@@ -1,0 +1,24 @@
+{
+  "b77d2baf3e7aa437b527a72f0dc39ea7": {
+    "id": ["migr_asyappctza"],
+    "time_format": ["date"],
+    "filters": null,
+    "type": ["code"],
+    "select_time": null,
+    "stringsAsFactors": [false],
+    "keepFlags": [false],
+    "source": ["bulk"],
+    "download_date": ["2024-01-18"]
+  },
+  "0cd02e79f0a37b1680d4587441a87ca6": {
+    "id": ["demo_pjan"],
+    "time_format": ["date"],
+    "filters": null,
+    "type": ["code"],
+    "select_time": null,
+    "stringsAsFactors": [false],
+    "keepFlags": [false],
+    "source": ["bulk"],
+    "download_date": ["2024-01-18"]
+  }
+}
