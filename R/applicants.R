@@ -108,7 +108,10 @@ p_tot1 <- d |>
   ) |> 
   plot_data() +
   labs(
-    subtitle = "Samtals"
+    subtitle = "Samtals <em style='font-size:16px; font-weight:100;'>(umsóknir)</em>"
+  ) +
+  theme(
+    plot.subtitle = element_markdown()
   )
 
 #### Úkraína ####
@@ -120,7 +123,10 @@ p_ukraine <- d |>
   ) |> 
   plot_data() +
   labs(
-    subtitle = "Frá Úkraínu"
+    subtitle = "Frá Úkraínu <em style='font-size:16px; font-weight:100;'>(umsóknir)</em>"
+  ) +
+  theme(
+    plot.subtitle = element_markdown()
   )
 
 #### Samtals - Úkraína ####
@@ -170,7 +176,7 @@ p_palestina <- d |>
   ) |> 
   plot_data() +
   labs(
-    subtitle = "Umsækjendur frá Palestínu"
+    subtitle = "Frá Palestínu"
   )
 
 
@@ -216,7 +222,7 @@ subtitle <- str_c(
 p <- p_tot /
   p_countries +
   plot_annotation(
-    title = "Umsækjendur um tímabundna vernd eftir upprunalandi (2022)",
+    title = "Verndarumsóknir eftir uppruna- og komulandi (2022)",
     subtitle = subtitle,
     caption = caption, 
     theme = theme(

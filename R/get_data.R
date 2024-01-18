@@ -33,3 +33,19 @@ d |>
   write_csv(
     "data/pop.csv"
   )
+
+
+#### Decisions ####
+
+decisions <- get_eurostat(
+  "migr_asydcfsta",
+  cache = TRUE,
+  update_cache = TRUE,
+  cache_dir = "data-raw"
+)
+
+d <- decisions |> 
+  label_eurostat()
+
+d |> 
+  write_csv("data/decisions.csv")

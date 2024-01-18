@@ -20,5 +20,27 @@
     "keepFlags": [false],
     "source": ["bulk"],
     "download_date": ["2024-01-18"]
+  },
+  "8ab8b7b9edbc985b457be4340b86e666": {
+    "id": ["migr_asytpfpop"],
+    "time_format": ["date"],
+    "filters": null,
+    "type": ["code"],
+    "select_time": null,
+    "stringsAsFactors": [false],
+    "keepFlags": [false],
+    "source": ["bulk"],
+    "download_date": ["2024-01-18"]
+  },
+  "37f64c5aa97769ce6dc583aa0e30126d": {
+    "id": ["migr_asydcfsta"],
+    "time_format": ["date"],
+    "filters": null,
+    "type": ["code"],
+    "select_time": null,
+    "stringsAsFactors": [false],
+    "keepFlags": [false],
+    "source": ["bulk"],
+    "download_date": ["2024-01-18"]
   }
 }
