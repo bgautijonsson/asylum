@@ -239,4 +239,3 @@ ggsave(
   filename = "Figures/umsaekjendur.png",
   width = 8, height = 0.55 * 8, scale = 1.8
 )
-

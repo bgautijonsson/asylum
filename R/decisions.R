@@ -1,103 +1,103 @@
-# library(tidyverse)
-# library(metill)
-# library(scales)
-# library(geomtextpath)
-# library(ggtext)
-# library(janitor)
-# library(patchwork)
-# library(glue)
-# theme_set(theme_metill())
-# Sys.setlocale("LC_ALL", "is_IS.UTF-8")
-# 
-# source("R/plot_utils.R")
-# 
-# update_cache <- TRUE
-# 
-# 
-# caption <- str_c(
-#   "Mynd eftir @bggjonsson hjá metill.is byggð á gögnum Eurostat um fólksflutninga.",
-#   "\nGögn og kóði: https://github.com/bgautijonsson/asylum"
-# )
-# 
-# litur_island <- "#08306b"
-# litur_danmork <- "#e41a1c"
-# litur_finnland <- "#3690c0"
-# litur_noregur <- "#7f0000"
-# litur_svithjod <- "#fd8d3c"
-# litur_annad <- "#737373"
-# 
-# decisions <- read_csv("data/decisions.csv") |>
-#   rename(time = TIME_PERIOD) |> 
-#   filter(
-#     sex == "Total",
-#     age == "Total",
-#     year(time) == 2022,
-#     geo != "European Union - 27 countries (from 2020)",
-#     decision == "Total positive decisions"
-#   ) |> 
-#   select(
-#     -freq, -sex, -unit, -age, -decision, -time
-#   ) |>
-#   rename(
-#     decisions = values
-#   )
-# 
-# pop <- read_csv("data/pop.csv") |>
-#   rename(time = TIME_PERIOD) |>
-#   filter(
-#     sex == "Total",
-#     age == "Total",
-#     year(time) == 2022
-#   ) |>
-#   select(
-#     -freq, -sex, -unit, -age, -time
-#   ) |>
-#   rename(pop = values)
-# 
-# 
-# d <- decisions |>
-#   inner_join(
-#     pop,
-#     by = join_by(geo)
-#   ) |>
-#   inner_join(
-#     metill::country_names(),
-#     by = join_by(geo == country)
-#   ) |>
-#   select(land, citizen, decisions, pop) |>
-#   filter(
-#     citizen %in% c(
-#       "Ukraine",
-#       "Palestine*",
-#       "Venezuela",
-#       "Total"
-#     )
-#   ) |>
-#   mutate(
-#     citizen = str_replace(citizen, "\\*", "") |>
-#       as_factor() |>
-#       fct_recode(
-#         "Palestína" = "Palestine",
-#         "Úkraína" = "Ukraine",
-#         "Venesúela" = "Venezuela",
-#         "Samtals" = "Total"
-#       )
-#   ) |>
-#   mutate(
-#     per_pop = decisions / pop * 1e5
-#   ) |>
-#   mutate(
-#     colour = case_when(
-#       land == "Ísland" ~ litur_island,
-#       land == "Danmörk" ~ litur_danmork,
-#       land == "Finnland" ~ litur_finnland,
-#       land == "Noregur" ~ litur_noregur,
-#       land == "Svíþjóð" ~ litur_svithjod,
-#       TRUE ~ litur_annad
-#     ),
-#     linewidth = 1 * (land == "Ísland"),
-#     size = as_factor(linewidth)
-#   )
+library(tidyverse)
+library(metill)
+library(scales)
+library(geomtextpath)
+library(ggtext)
+library(janitor)
+library(patchwork)
+library(glue)
+theme_set(theme_metill())
+Sys.setlocale("LC_ALL", "is_IS.UTF-8")
+
+source("R/plot_utils.R")
+
+update_cache <- TRUE
+
+
+caption <- str_c(
+  "Mynd eftir @bggjonsson hjá metill.is byggð á gögnum Eurostat um fólksflutninga.",
+  "\nGögn og kóði: https://github.com/bgautijonsson/asylum"
+)
+
+litur_island <- "#08306b"
+litur_danmork <- "#e41a1c"
+litur_finnland <- "#3690c0"
+litur_noregur <- "#7f0000"
+litur_svithjod <- "#fd8d3c"
+litur_annad <- "#737373"
+
+decisions <- read_csv("data/decisions.csv") |>
+  rename(time = TIME_PERIOD) |>
+  filter(
+    sex == "Total",
+    age == "Total",
+    year(time) == 2022,
+    geo != "European Union - 27 countries (from 2020)",
+    decision == "Total positive decisions"
+  ) |>
+  select(
+    -freq, -sex, -unit, -age, -decision, -time
+  ) |>
+  rename(
+    decisions = values
+  )
+
+pop <- read_csv("data/pop.csv") |>
+  rename(time = TIME_PERIOD) |>
+  filter(
+    sex == "Total",
+    age == "Total",
+    year(time) == 2022
+  ) |>
+  select(
+    -freq, -sex, -unit, -age, -time
+  ) |>
+  rename(pop = values)
+
+
+d <- decisions |>
+  inner_join(
+    pop,
+    by = join_by(geo)
+  ) |>
+  inner_join(
+    metill::country_names(),
+    by = join_by(geo == country)
+  ) |>
+  select(land, citizen, decisions, pop) |>
+  filter(
+    citizen %in% c(
+      "Ukraine",
+      "Palestine*",
+      "Venezuela",
+      "Total"
+    )
+  ) |>
+  mutate(
+    citizen = str_replace(citizen, "\\*", "") |>
+      as_factor() |>
+      fct_recode(
+        "Palestína" = "Palestine",
+        "Úkraína" = "Ukraine",
+        "Venesúela" = "Venezuela",
+        "Samtals" = "Total"
+      )
+  ) |>
+  mutate(
+    per_pop = decisions / pop * 1e5
+  ) |>
+  mutate(
+    colour = case_when(
+      land == "Ísland" ~ litur_island,
+      land == "Danmörk" ~ litur_danmork,
+      land == "Finnland" ~ litur_finnland,
+      land == "Noregur" ~ litur_noregur,
+      land == "Svíþjóð" ~ litur_svithjod,
+      TRUE ~ litur_annad
+    ),
+    linewidth = 1 * (land == "Ísland"),
+    size = as_factor(linewidth)
+  )
 
 
 #### Samtals ####
