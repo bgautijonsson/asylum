@@ -49,3 +49,40 @@ d <- decisions |>
 
 d |> 
   write_csv("data/decisions.csv")
+
+
+
+
+#### Temporary Protection ####
+
+temporary_protection <- get_eurostat(
+  "migr_asytpfa",
+  filters = list(
+    citizen = "TOTAL",
+    age = "TOTAL",
+    sex = "T"
+  )
+)  |> 
+  select(-citizen, -age, -sex, -freq, -unit) |> 
+  label_eurostat() |> 
+  rename(
+    granted_temporary_protection = values
+  )
+
+
+#### Final Decisions ####
+
+
+final_decisions <- get_eurostat(
+  "migr_asydcfina",
+  filters = list(
+    citizen = "TOTAL",
+    age = "TOTAL",
+    sex = "T"
+  )
+)  |> 
+  select(-citizen, -age, -sex, -freq, -unit) |> 
+  label_eurostat() |> 
+  rename(
+    final_decision = values
+  )
