@@ -1,89 +1,67 @@
-library(tidyverse)
-library(metill)
-library(scales)
-library(geomtextpath)
-library(ggtext)
-library(janitor)
-library(patchwork)
-library(glue)
-library(gt)
-library(gtExtras)
-library(ggstream)
-library(hagstofa)
-library(ggh4x)
-theme_set(theme_metill())
-Sys.setlocale("LC_ALL", "is_IS.UTF-8")
+# library(tidyverse)
+# library(metill)
+# library(scales)
+# library(geomtextpath)
+# library(ggtext)
+# library(janitor)
+# library(patchwork)
+# library(glue)
+# library(gt)
+# library(gtExtras)
+# library(ggstream)
+# library(hagstofa)
+# library(ggh4x)
+# theme_set(theme_metill())
+# Sys.setlocale("LC_ALL", "is_IS.UTF-8")
+# 
+# 
+# applicants <- read_csv("data/applicants.csv") |>
+#   rename(time = TIME_PERIOD) |>
+#   filter(
+#     asyl_app == "Asylum applicant",
+#     geo == "Iceland",
+#     age == "Total",
+#     sex == "Total",
+#     !citizen %in% c(
+#       "Total",
+#       "Extra-EU27 (from 2020)",
+#       "European Union - 27 countries (from 2020)"
+#     )
+#   ) |>
+#   select(
+#     -freq, -unit,  -asyl_app, -age, -sex, -geo
+#   ) |>
+#   rename(
+#     applicants = values
+#   )
+# 
+# 
+# 
+# url <- "https://px.hagstofa.is:443/pxis/api/v1/is/Ibuar/mannfjoldi/3_bakgrunnur/Vernd_dvalarleyfi/MAN45001.px"
+# 
+# d <- hg_data(
+#   url
+# ) |>
+#   filter(
+#     Aldur == "Alls",
+#     Kyn == "Alls"
+#   ) |>
+#   collect()
+# 
+# d <- d |>
+#   janitor::clean_names() |>
+#   rename(value = 5) |>
+#   select(-aldur, -kyn) |>
+#   filter(rikisfang != "Alls") |>
+#   mutate(ar = parse_number(ar)) |>
+#   mutate(
+#     value = coalesce(value, 0)
+#   )
 
-
-applicants <- read_csv("data/applicants.csv") |>
-  rename(time = TIME_PERIOD) |>
-  filter(
-    asyl_app == "Asylum applicant",
-    geo == "Iceland",
-    age == "Total",
-    sex == "Total",
-    !citizen %in% c(
-      "Total",
-      "Extra-EU27 (from 2020)",
-      "European Union - 27 countries (from 2020)"
-    )
-  ) |>
-  select(
-    -freq, -unit,  -asyl_app, -age, -sex, -geo
-  ) |>
-  rename(
-    applicants = values
-  )
-
-
-p1 <- applicants |>
-  mutate(
-    total = sum(applicants),
-    .by = citizen
-  ) |>
-  filter(
-    total > quantile(total, 0.9),
-    !citizen %in% c("Ukraine")
-    ) |>
-  ggplot(aes(time, applicants, fill = citizen)) +
-  geom_stream()
-
-
-url <- "https://px.hagstofa.is:443/pxis/api/v1/is/Ibuar/mannfjoldi/3_bakgrunnur/Vernd_dvalarleyfi/MAN45001.px"
-
-d <- hg_data(
-  url
-) |>
-  filter(
-    Aldur == "Alls",
-    Kyn == "Alls"
-  ) |>
-  collect()
-
-d <- d |>
-  janitor::clean_names() |>
-  rename(value = 5) |>
-  select(-aldur, -kyn) |>
-  filter(rikisfang != "Alls") |>
-  mutate(ar = parse_number(ar)) |>
-  mutate(
-    value = coalesce(value, 0)
-  )
-
-p2 <- d |>
-  mutate(
-    total = sum(value),
-    .by = rikisfang
-  ) |>
-  filter(total >= quantile(total, 0.85)) |>
-  ggplot(aes(ar, value, fill = rikisfang)) +
-  geom_stream()
-
-p1 + p2
 
 countries <- tribble(
   ~rikisfang, ~citizen, ~flag,
-  "Afganistan", "Afghanistan", "#00441b", 
+  "Afganistan", "Afghanistan", "#000000", 
   "Albanía", "Albania", "#a50f15", 
   "Georgía", "Georgia", "#ef3b2c", 
   "Írak", "Iraq", "#67000d", 
@@ -183,14 +161,14 @@ p1 <- plot_dat1 |>
   scale_fill_manual(
     values = plot_dat1 |> distinct(rikisfang, flag) |> arrange(rikisfang) |>  pull(flag),
     guide = guide_legend(
-      keyheight = unit(1.4, "cm")
+      keyheight = unit(1.45, "cm")
     )
   ) +
-  theme(
-    axis.text.y = element_blank(),
-    axis.line.y = element_blank(),
-    axis.ticks.y = element_blank()
-  ) +
+  # theme(
+  #   axis.text.y = element_blank(),
+  #   axis.line.y = element_blank(),
+  #   axis.ticks.y = element_blank()
+  # ) +
   labs(
     x = NULL,
     y = NULL,
@@ -199,13 +177,13 @@ p1 <- plot_dat1 |>
 
 p2 <- plot_dat |> 
   mutate(
-    rikisfang = 1 * (rikisfang != "Annað") - 0.1 * (rikisfang == "Venesúela")
+    rikisfang = -1 * (rikisfang == "Annað") - 2 * (rikisfang == "Venesúela")
   ) |> 
   count(rikisfang, ar, wt = applicants) |> 
   ggplot(aes(ar, n)) +
   geom_col(aes(fill = factor(rikisfang)), position = "stack") +
   geom_text(
-    data = ~summarise(.x, n = sum(n), .by = ar),
+    data = ~filter(.x, rikisfang != -4) |> summarise(n = sum(n), .by = ar),
     aes(label = n),
     nudge_y = 400,
     size = 3
@@ -231,7 +209,7 @@ p2 <- plot_dat |>
     expand = expansion(0.01)
   ) +
   scale_fill_manual(
-    values = c("grey90", "#fe9929", "grey30")
+    values = c("#fe9929", "grey90", "grey30")
   ) +
   coord_cartesian(clip = "off", xlim = c(1997, 2023)) +
   theme(
@@ -253,7 +231,7 @@ p <- p1 + p2 +
   plot_annotation(
     title = "Hvaðan koma umsækjendur um hæli og vernd til Íslands?",
     subtitle = str_c(
-      "Myndir sýnir fjölda umsókna um hæli eða vernd á Íslandi eftir ríkisfangi umsækjenda frá árinu 1997 að Úkraínu undanskilinni | ",
+      "Myndin sýnir fjölda umsókna um hæli eða vernd á Íslandi eftir ríkisfangi umsækjenda frá árinu 1997 að Úkraínu undanskilinni | ",
       "Ekki eru öll ríkisföng sýnd |\n",
       "Umsækjendur frá Venesúela eru ekki sýndir í efri mynd | Fjöldi frá Venesúela er sýndur sér á súluriti að neðan"
     ),
