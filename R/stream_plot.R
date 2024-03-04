@@ -1,62 +1,62 @@
-# library(tidyverse)
-# library(metill)
-# library(scales)
-# library(geomtextpath)
-# library(ggtext)
-# library(janitor)
-# library(patchwork)
-# library(glue)
-# library(gt)
-# library(gtExtras)
-# library(ggstream)
-# library(hagstofa)
-# library(ggh4x)
-# theme_set(theme_metill())
-# Sys.setlocale("LC_ALL", "is_IS.UTF-8")
-# 
-# 
-# applicants <- read_csv("data/applicants.csv") |>
-#   rename(time = TIME_PERIOD) |>
-#   filter(
-#     asyl_app == "Asylum applicant",
-#     geo == "Iceland",
-#     age == "Total",
-#     sex == "Total",
-#     !citizen %in% c(
-#       "Total",
-#       "Extra-EU27 (from 2020)",
-#       "European Union - 27 countries (from 2020)"
-#     )
-#   ) |>
-#   select(
-#     -freq, -unit,  -asyl_app, -age, -sex, -geo
-#   ) |>
-#   rename(
-#     applicants = values
-#   )
-# 
-# 
-# 
-# url <- "https://px.hagstofa.is:443/pxis/api/v1/is/Ibuar/mannfjoldi/3_bakgrunnur/Vernd_dvalarleyfi/MAN45001.px"
-# 
-# d <- hg_data(
-#   url
-# ) |>
-#   filter(
-#     Aldur == "Alls",
-#     Kyn == "Alls"
-#   ) |>
-#   collect()
-# 
-# d <- d |>
-#   janitor::clean_names() |>
-#   rename(value = 5) |>
-#   select(-aldur, -kyn) |>
-#   filter(rikisfang != "Alls") |>
-#   mutate(ar = parse_number(ar)) |>
-#   mutate(
-#     value = coalesce(value, 0)
-#   )
+library(tidyverse)
+library(metill)
+library(scales)
+library(geomtextpath)
+library(ggtext)
+library(janitor)
+library(patchwork)
+library(glue)
+library(gt)
+library(gtExtras)
+library(ggstream)
+library(hagstofa)
+library(ggh4x)
+theme_set(theme_metill())
+Sys.setlocale("LC_ALL", "is_IS.UTF-8")
+
+
+applicants <- read_csv("data/applicants.csv") |>
+  rename(time = TIME_PERIOD) |>
+  filter(
+    asyl_app == "Asylum applicant",
+    geo == "Iceland",
+    age == "Total",
+    sex == "Total",
+    !citizen %in% c(
+      "Total",
+      "Extra-EU27 (from 2020)",
+      "European Union - 27 countries (from 2020)"
+    )
+  ) |>
+  select(
+    -freq, -unit,  -asyl_app, -age, -sex, -geo
+  ) |>
+  rename(
+    applicants = values
+  )
+
+
+
+url <- "https://px.hagstofa.is:443/pxis/api/v1/is/Ibuar/mannfjoldi/3_bakgrunnur/Vernd_dvalarleyfi/MAN45001.px"
+
+d <- hg_data(
+  url
+) |>
+  filter(
+    Aldur == "Alls",
+    Kyn == "Alls"
+  ) |>
+  collect()
+
+d <- d |>
+  janitor::clean_names() |>
+  rename(value = 5) |>
+  select(-aldur, -kyn) |>
+  filter(rikisfang != "Alls") |>
+  mutate(ar = parse_number(ar)) |>
+  mutate(
+    value = coalesce(value, 0)
+  )
 
 
 countries <- tribble(
@@ -246,5 +246,15 @@ p <- p1 + p2 +
 ggsave(
   plot = p,
   filename = "Figures/stream_plot.png",
+  width = 8, height = 0.621 * 8, scale = 1.8
+)
+
+ggsave(
+  plot = p & theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    legend.background = element_blank()
+  ),
+  filename = "Figures/stream_plot_fp.png",
   width = 8, height = 0.621 * 8, scale = 1.8
 )
