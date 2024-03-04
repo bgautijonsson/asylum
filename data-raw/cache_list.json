@@ -42,5 +42,27 @@
     "keepFlags": [false],
     "source": ["bulk"],
     "download_date": ["2024-01-18"]
+  },
+  "fe939f01b9a08e7a236b1300e96b2490": {
+    "id": ["migr_asydcfsta"],
+    "time_format": ["date"],
+    "filters": null,
+    "type": ["code"],
+    "select_time": null,
+    "stringsAsFactors": [false],
+    "keepFlags": [false],
+    "source": ["bulk"],
+    "download_date": ["2024-01-24"]
+  },
+  "c0dc678a5901e2eace5d388235eb10eb": {
+    "id": ["migr_asyappctza"],
+    "time_format": ["date"],
+    "filters": null,
+    "type": ["code"],
+    "select_time": null,
+    "stringsAsFactors": [false],
+    "keepFlags": [false],
+    "source": ["bulk"],
+    "download_date": ["2024-02-27"]
   }
 }

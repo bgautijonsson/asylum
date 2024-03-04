@@ -126,7 +126,7 @@ table_dat |>
     by = join_by(citizen, sex)
   ) |> 
   mutate(
-    citizen_n = md(glue("**{citizen}**<br>Heildarjöldi: {n_tot}"))
+    citizen_n = md(glue("**{citizen}**<br>Heildarfjöldi: {n_tot}"))
   ) |> 
   select(-citizen, -n_tot) |> 
   group_by(citizen_n) |> 
@@ -134,7 +134,7 @@ table_dat |>
     locale = "is",process_md = TRUE
   ) |> 
   tab_header(
-    title = md("**Aldurs- og kynjadreifing einstaklinga sem sóttu um alþjóðlega vernd á Íslandi frá 2008**"),
+    title = md("**Aldurs- og kynjadreifing einstaklinga sem sóttu um alþjóðlega vernd eða hæli á Íslandi frá 2008**"),
     subtitle = md("Samkvæmt nýjustu tölum Eurostat")
   ) |> 
   tab_footnote(

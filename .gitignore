@@ -6,3 +6,4 @@
 .quarto
 data/applicants.csv
 data/decisions.csv
+data-raw/ 
