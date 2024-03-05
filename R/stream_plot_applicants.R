@@ -245,7 +245,7 @@ p <- p1 + p2 +
 
 ggsave(
   plot = p,
-  filename = "Figures/stream_plot.png",
+  filename = "Figures/stream_plot_applicants.png",
   width = 8, height = 0.621 * 8, scale = 1.8
 )
 
@@ -255,6 +255,6 @@ ggsave(
     plot.background = element_blank(),
     legend.background = element_blank()
   ),
-  filename = "Figures/stream_plot_fp.png",
+  filename = "Figures/stream_plot_applicants_fp.png",
   width = 8, height = 0.621 * 8, scale = 1.8
 )
