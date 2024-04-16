@@ -130,7 +130,7 @@ plot_dat <- applicants |>
       ) 
       
       model_matrix <- year(out$time) + (yday(out$time) - 1)/365.25
-      
+       
       out |> 
         mutate(
           value = predict(m, newdata = model_matrix)

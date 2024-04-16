@@ -18,7 +18,7 @@ Sys.setlocale("LC_ALL", "is_IS.UTF-8")
 decisions <- read_csv("data/decisions.csv") |>
   rename(time = TIME_PERIOD)
 
-decisions <- decisions |> 
+decisions <- decisions |>
   filter(
     decision == "Total positive decisions",
     geo == "Iceland",
@@ -43,7 +43,7 @@ url <- "https://px.hagstofa.is:443/pxis/api/v1/is/Ibuar/mannfjoldi/3_bakgrunnur/
 
 d <- hg_data(
   url
-) |> 
+) |>
   filter(
     Aldur == "Alls",
     Kyn == "Alls",
@@ -64,15 +64,14 @@ d <- d |>
 
 countries <- tribble(
   ~rikisfang, ~citizen, ~flag,
-  "Afganistan", "Afghanistan", "#000000", 
-  "Albanía", "Albania", "#a50f15", 
-  "Georgía", "Georgia", "#ef3b2c", 
-  "Írak", "Iraq", "#67000d", 
-  "Íran", "Iran", "#239F40", 
-  "Nígería", "Nigeria", "#238b45", 
-  "Norður Makedónía", "North Macedonia", "#ffeda0",
-  "Palestína", "Palestine*", "grey30", 
-  "Sómalía", "Somalia", "#6baed6", 
+  "Afganistan", "Afghanistan", "#000000",
+  "Hondúras", "Honduras", "#00bce4",
+  "Írak", "Iraq", "#67000d",
+  "Íran", "Iran", "#239F40",
+  "Nígería", "Nigeria", "#238b45",
+  "Palestína", "Palestine*", "grey30",
+  "Sómalía", "Somalia", "#6baed6",
+  "Sýrland", "Syria", "#CE1126",
   "Venesúela", "Venezuela", "#fd8d3c",
 )
 
@@ -119,38 +118,6 @@ plot_dat1 <- plot_dat |>
 p1 <- plot_dat1 |> 
   ggplot(aes(ar, decisions, fill = rikisfang)) +
   geom_stream(col = "black", bw = 0.65) +
-  annotate(
-    geom = "text",
-    x = 2014,
-    y = 100,
-    hjust = 1,
-    label = str_c(
-      "Fram til ársins 2016 barst Íslenskum yfirvöldum\n",
-      "nær engar umsóknir um hæli"
-    ),
-    family = "Lato",
-    colour = "#525252"
-  ) +
-  annotate(
-    geom = "text",
-    label = str_c(
-      "Þykkt straumanna er í hlutfalli við\nfjölda umsókna frá viðeigandi landi"
-    ),
-    x = 2015.5, y = -300,
-    hjust = 1, 
-    family = "Lato",
-    colour = "#525252"
-  ) +
-  annotate(
-    geom = "text",
-    label = str_c(
-      "Að Úkraínu og Venesúela undanskildum\nvoru umsóknir árið 2023\njafnmargar og árin 2016/2017"
-    ),
-    x = 2022.2, y = 350,
-    hjust = 1, 
-    family = "Lato",
-    colour = "#525252"
-  ) +
   scale_x_continuous(
     breaks = seq(1997, 2023, by = 2),
     guide = guide_axis_truncated(
@@ -166,7 +133,7 @@ p1 <- plot_dat1 |>
   scale_fill_manual(
     values = plot_dat1 |> distinct(rikisfang, flag) |> arrange(rikisfang) |>  pull(flag),
     guide = guide_legend(
-      keyheight = unit(1.45, "cm")
+      keyheight = unit(0.075, "npc")
     )
   ) +
   # theme(
@@ -184,7 +151,7 @@ p2 <- plot_dat |>
   mutate(
     rikisfang = -1 * (rikisfang == "Annað") - 2 * (rikisfang == "Venesúela")
   ) |> 
-  count(rikisfang, ar, wt = applicants) |> 
+  count(rikisfang, ar, wt = decisions) |> 
   ggplot(aes(ar, n)) +
   geom_col(aes(fill = factor(rikisfang)), position = "stack") +
   geom_text(
@@ -247,6 +214,7 @@ p <- p1 + p2 +
     )
   )
 
+p
 
 ggsave(
   plot = p,

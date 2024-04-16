@@ -164,11 +164,11 @@ p1 <- plot_dat1 |>
       keyheight = unit(1.45, "cm")
     )
   ) +
-  # theme(
-  #   axis.text.y = element_blank(),
-  #   axis.line.y = element_blank(),
-  #   axis.ticks.y = element_blank()
-  # ) +
+  theme(
+    axis.text.y = element_blank(),
+    axis.line.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
   labs(
     x = NULL,
     y = NULL,
