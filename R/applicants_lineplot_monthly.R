@@ -19,28 +19,29 @@ litur_samtals <- "#000000"
 litur_ukr <- "#525252"
 litur_ukr_ven <- "#737373"
 
-# d <- get_eurostat(
-#   "migr_asyappctzm",
-#   filters = list(
-#     sex = "T",
-#     age = "TOTAL",
-#     asyl_app = "ASY_APP",
-#     geo = "IS"
-#   )
-# ) |>
-#   select(-sex, -age, -freq, -unit, -asyl_app, -geo) |>
-#   drop_na() |>
-#   label_eurostat() |>
-#   rename(value = values) |>
-#   janitor::clean_names() |>
-#   filter(
-#     !citizen %in% c(
-#       "Total",
-#       "Extra-EU27 (from 2020)",
-#       "European Union - 27 countries (from 2020)"
-#     )
-#   )
-# 
+d <- get_eurostat(
+  "migr_asyappctzm",
+  filters = list(
+    sex = "T",
+    age = "TOTAL",
+    asyl_app = "ASY_APP",
+    geo = "IS"
+  )
+) |>
+  select(-sex, -age, -freq, -unit, -asyl_app, -geo) |>
+  drop_na() |>
+  label_eurostat() |>
+  rename(value = values) |>
+  janitor::clean_names() |>
+  filter(
+    !citizen %in% c(
+      "Total",
+      "Extra-EU27 (from 2020)",
+      "European Union - 27 countries (from 2020)"
+    )
+  )
+
+
 plot_dat <- d |>
   summarise(
     Samtals = sum(value),
@@ -147,4 +148,15 @@ ggsave(
   plot = p,
   filename = "Figures/monthly_applicants_lineplot.png",
   width = 8, height = 0.5 * 8, scale = 1.9
+)
+
+
+ggsave(
+  plot = p & theme(
+    panel.background = element_blank(),
+    plot.background = element_blank(),
+    legend.background = element_blank()
+  ),
+  filename = "Figures/monthly_applicants_lineplot_fp.png",
+  width = 8, height = 0.621 * 8, scale = 1.8
 )
