@@ -158,5 +158,5 @@ ggsave(
     legend.background = element_blank()
   ),
   filename = "Figures/monthly_applicants_lineplot_fp.png",
-  width = 8, height = 0.621 * 8, scale = 1.8
+  width = 8, height = 0.5 * 8, scale = 1.9
 )
