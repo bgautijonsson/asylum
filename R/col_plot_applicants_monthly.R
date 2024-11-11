@@ -15,27 +15,27 @@ library(eurostat)
 theme_set(theme_metill())
 Sys.setlocale("LC_ALL", "is_IS.UTF-8")
 
-# d <- get_eurostat(
-#   "migr_asyappctzm",
-#   filters = list(
-#     sex = "T",
-#     age = "TOTAL",
-#     asyl_app = "ASY_APP",
-#     geo = "IS"
-#   )
-# ) |>
-#   select(-sex, -age, -freq, -unit, -asyl_app, -geo) |>
-#   drop_na() |>
-#   label_eurostat() |>
-#   rename(value = values) |>
-#   janitor::clean_names() |>
-#   filter(
-#     !citizen %in% c(
-#       "Total",
-#       "Extra-EU27 (from 2020)",
-#       "European Union - 27 countries (from 2020)"
-#       )
-#   )
+d <- get_eurostat(
+  "migr_asyappctzm",
+  filters = list(
+    sex = "T",
+    age = "TOTAL",
+    asyl_app = "ASY_APP",
+    geo = "IS"
+  )
+) |>
+  select(-sex, -age, -freq, -unit, -asyl_app, -geo) |>
+  drop_na() |>
+  label_eurostat() |>
+  rename(value = values) |>
+  janitor::clean_names() |>
+  filter(
+    !citizen %in% c(
+      "Total",
+      "Extra-EU27 (from 2020)",
+      "European Union - 27 countries (from 2020)"
+      )
+  )
 
 countries <- tribble(
   ~rikisfang, ~citizen, ~flag,
@@ -67,7 +67,7 @@ plot_dat <- d |>
     by = join_by(citizen)
   ) |> 
   mutate(
-    rikisfang = if_else(is.na(flag), "Annað", rikisfang)
+    rikisfang = if_else(is.na(flag), "Annað", rikisfang),
   ) |>
   summarise(
     value = sum(value),
@@ -134,7 +134,8 @@ p1 <- plot_dat |>
     expand = expansion(0.01)
   ) +
   scale_y_continuous(
-    expand = expansion()
+    expand = expansion(),
+    guide = ggh4x::guide_axis_truncated()
   ) +
   scale_fill_manual(
     values = c("#0057B7", "#fe9929", "grey30"),
@@ -155,9 +156,6 @@ p1 <- plot_dat |>
     xlim = clock::date_build(c(2008, 2024), c(1, 8))
   ) +
   theme(
-    axis.text.y = element_blank(),
-    axis.line.y = element_blank(),
-    axis.ticks.y = element_blank(),
     plot.subtitle = element_textbox()
   ) +
   labs(
@@ -174,19 +172,64 @@ plot_dat1 <- plot_dat |>
     !rikisfang %in% c("Venesúela", "Úkraína")
   ) |>
   mutate(
-    rikisfang = fct_reorder(rikisfang, total)
+    rikisfang = fct_collapse(
+      rikisfang,
+      "Albanía" = "Albanía",
+      "Palestína" = "Palestína",
+      "Norður Makedónía" = "Norður Makedónía",
+      "Nígería" = "Nígería",
+      "Sómalía" = "Sómalía",
+      "Georgía" = "Georgía",
+      "Sýrland" = "Sýrland",
+      other_level = "Önnur lönd"
+    ),
+    flag = if_else(
+      rikisfang == "Önnur lönd",
+      "grey90",
+      flag
+    )
+  ) |> 
+  count(rikisfang, flag, time, wt = value, name = "value") |> 
+  mutate(
+    total = sum(value),
+    .by = rikisfang
+  ) |> 
+  mutate(
+    rikisfang = fct_reorder(rikisfang, -total),
+    flag = fct_reorder(flag, -total)
   )
 
 p2 <- plot_dat1 |> 
-  ggplot(aes(time, value, fill = flag)) +
-  geom_stream(
-    bw = 0.5,
-    col = "black"
+  ggplot(aes(time, value, fill = flag, col = flag)) +
+  geom_col(
+    position = "stack",
+    col = "black",
+    width = 31,
+    linewidth = 0.02
   ) +
-  annotate(
+  geom_text(
+    data = ~filter(
+      .x, 
+      time %in% clock::date_build(
+        c(2016, 2017, 2020, 2021, 2022, 2023, 2024), 
+        c(11, 8, 7, 11, 12, 9, 8)
+      )
+    ) |> 
+      summarise(value = sum(value), .by = time) |> 
+      mutate(
+        time = if_else(time == max(time), time + 0, time)
+      ),
+    aes(x = time, y = value, label = value),
+    nudge_y = 6,
+    size = 3.5,
+    fontface = "bold",
+    inherit.aes = FALSE,
+    col = "grey20"
+  ) +
+  annotate( #
     geom = "richtext",
     x = clock::date_build(2015),
-    y = 180 / 12,
+    y = 55,
     hjust = 1,
     label = str_c(
       "Fram til ársins <b>2015</b> barst Íslenskum yfirvöldum<br>",
@@ -200,36 +243,10 @@ p2 <- plot_dat1 |>
   annotate(
     geom = "richtext",
     label = str_c(
-      "Þykkt straumanna er í <b>hlutfalli við</b><br><b>fjölda umsókna</b> frá viðeigandi landi"
-    ),
-    x = clock::date_build(2016, 3), 
-    y = -350/12,
-    hjust = 1, 
-    family = "Lato",
-    colour = "#525252",
-    fill = NA,
-    label.colour = NA
-  ) +
-  annotate(
-    geom = "richtext",
-    label = str_c(
-      "Á þessari mynd "
-    ),
-    x = clock::date_build(2022, 3), 
-    y = -350/12,
-    hjust = 1, 
-    family = "Lato",
-    colour = "#525252",
-    fill = NA,
-    label.colour = NA
-  ) +
-  annotate(
-    geom = "richtext",
-    label = str_c(
       "Löndin að neðan rúmast öll innan<br>flokksins <b>Annað</b> í efri mynd"
     ),
     x = clock::date_build(2023, 8, 15),
-    y = 73,
+    y = 230,
     hjust = 0,
     family = "Lato",
     colour = "#525252",
@@ -239,8 +256,8 @@ p2 <- plot_dat1 |>
     geom = "segment",
     x = clock::date_build(2025, 4, 25),
     xend = clock::date_build(2025, 4, 25),
-    y = 85,
-    yend = 121,
+    y = 260,
+    yend = 340,
     arrow = arrow(type = "closed", length = unit(0.3, "cm")),
     colour = "#525252",
     linewidth = 1
@@ -251,24 +268,27 @@ p2 <- plot_dat1 |>
     guide = guide_axis_truncated(),
     expand = expansion(0.01)
   ) +
+  scale_y_continuous(
+    expand = expansion(),
+    guide = ggh4x::guide_axis_truncated(),
+    breaks = seq(0, 250, by = 50)
+  ) +
   scale_fill_identity(
     labels = plot_dat1 |> 
       distinct(rikisfang, flag) |> 
       arrange(rikisfang) |> 
       pull(rikisfang),
     guide = guide_legend(
-      keyheight = unit(0.6, "cm")
+      keyheight = unit(0.6, "cm"),
+      override.aes = list(col = "black", linewidth = 0.6)
     )
   ) +
   coord_cartesian(
     clip = "off",
-    ylim = c(NA, 60),
+    ylim = c(NA, 250),
     xlim = clock::date_build(c(2008, 2024), c(1, 8))
     ) +
   theme(
-    axis.text.y = element_blank(),
-    axis.line.y = element_blank(),
-    axis.ticks.y = element_blank(),
     plot.subtitle = element_textbox()
   ) +
   labs(
@@ -305,7 +325,7 @@ scale <- 1.6
 aspect <- 0.6
 ggsave(
   plot = p,
-  filename = "Figures/stream_plot_applicants_monthly.png",
+  filename = "Figures/col_plot_applicants_monthly.png",
   width = 8, 
   height = aspect * 8, 
   scale = scale
@@ -317,7 +337,7 @@ ggsave(
     plot.background = element_blank(),
     legend.background = element_blank()
   ),
-  filename = "Figures/stream_plot_applicants_monthly_fp.png",
+  filename = "Figures/col_plot_applicants_monthly_fp.png",
   width = 8,
   height = aspect * 8, 
   scale = scale

@@ -12,6 +12,7 @@ library(ggstream)
 library(hagstofa)
 library(ggh4x)
 library(eurostat)
+library(ggtext)
 theme_set(theme_metill())
 Sys.setlocale("LC_ALL", "is_IS.UTF-8")
 
@@ -23,14 +24,87 @@ litur_annad <- "grey80"
 linewidth_param <- 0.1
 
 text_size_param <- 4
-text_linewidth_param <- 0.2
+text_linewidth_param <- 0.3
+
+col_ven <- "#fd8d3c"
+col_utlendingastofnun <- "#034e7b"
+
+utlendingastofnun <- "<b style='color:#034e7b'>Útlendingastofnun</b>"
+utlendingastofnunar <- "<b style='color:#034e7b'>útlendingastofnunar</b>"
+
 
 text_list <- list(
   list(
     date = clock::date_build(2018,1 , 1),
-    y = 250
+    y = 200,
+    text = "{utlendingastofnun} veitir ríkisborgurum<br><b style='color:{col_ven}'>Venesúelabúa</b> viðbótarvernd"
+  ),
+  list(
+    date = clock::date_build(2021,1 , 1),
+    y = 100,
+    text = "{utlendingastofnun} byrjar að synja<br>umsóknum <b style='color:{col_ven}'>Venesúelabúa</b>"
+  ),
+  list(
+    date = clock::date_build(2021, 9, 1),
+    y = 150,
+    text = "<b>Kærunefnd útlendingamála</b> fellur synjanir<br>{utlendingastofnunar} úr gildi"
+  ),
+  list(
+    date = clock::date_build(2022, 1, 1),
+    y = 200,
+    text = "{utlendingastofnun} byrjar aftur að synja umsóknum"
+  ),
+  list(
+    date = clock::date_build(2022, 11, 1),
+    y = 340,
+    text = "{utlendingastofnun} stöðvar afgreiðslu umsókna <b style='color:{col_ven}'>Venesúelabúa</b>"
+  ),
+  list(
+    date = clock::date_build(2023, 3, 1),
+    y = 370,
+    text = "{utlendingastofnun} byrjar aftur að afgreiða umsóknir <b style='color:{col_ven}'>Venesúelabúa</b>"
+  ),
+  list(
+    date = clock::date_build(2023, 3, 15),
+    y = 470,
+    text = "Fyrri útlendingalög samþykkt"
+  ),
+  list(
+    date = clock::date_build(2024, 6, 1),
+    y = 500,
+    text = "Seinni útlendingalög samþykkt"
   )
 )
+
+plot_text <- function(textlist) {
+  list(
+    annotate(
+      geom = "segment",
+      x = textlist$date,
+      xend = textlist$date,
+      y = textlist$y,
+      yend = 0,
+      lty = 2,
+      col = "grey0",
+      size = text_size_param,
+      inherit.aes = FALSE,
+      linewidth = text_linewidth_param
+    ),
+    annotate(
+      geom = "richtext",
+      x = textlist$date,
+      y = textlist$y,
+      label = glue(textlist$text),
+      hjust = 1,
+      vjust = 0,
+      lty = 2,
+      col = "grey0",
+      size = text_size_param,
+      inherit.aes = FALSE,
+      alpha = 0.8
+    ) 
+  )
+}
 
 d <- get_eurostat(
   "migr_asyappctzm",
@@ -108,12 +182,6 @@ p <- plot_dat |>
   ) |>
   filter(year(time) >= 2015) |>
   ggplot(aes(time, value, group = citizen, label = citizen, fill = citizen, col = col, hjust = citizen)) +
-  # geom_point(alpha = 0.1) +
-  # geom_area(
-  #   position = "stack",
-  #   col = "black",
-  #   linewidth = 0.3
-  # ) +
   stat_smooth(
     span = 0.17,
     geom = "area",
@@ -122,88 +190,6 @@ p <- plot_dat |>
     alpha = 0.5,
     col = "black",
     linewidth = linewidth_param
-  ) +
-  geom_textsegment(
-    data = tibble(
-      y = 6000 / 24, yend = 6000 / 24,
-      x = clock::date_build(2014, 11),
-      xend = max(plot_dat$time)
-    ),
-    aes(x = x, xend = xend, y = y, yend = yend),
-    label = "Í greinargerð sem fylgir frumvarpi Dómsmálaráðherra eru áætlaðar samtals 6.000 umsóknir árin 2025 - 2026 (uþb 250 á mánuði)",
-    lty = 1,
-    col = "#662506",
-    size = 4,
-    inherit.aes = FALSE,
-    linewidth = linewidth_param,
-    hjust = 0
-  ) +
-  geom_textsegment(
-    data = tibble(
-      y = 350, yend = 350,
-      x = clock::date_build(2018, 2),
-      xend = max(plot_dat$time)
-    ),
-    aes(x = x, xend = xend, y = y, yend = yend),
-    label = "Árin 2022 og 2023 fengum við samtals 8.500 umsóknir (uþb 350 á mánuði)",
-    lty = 1,
-    col = "grey0",
-    size = 4,
-    inherit.aes = FALSE,
-    linewidth = linewidth_param,
-    hjust = 0
-  ) +
-  geom_textsegment(
-    data = tibble(
-      y = 190, yend = 190,
-      x = clock::date_build(2016, 6),
-      xend = max(plot_dat$time)
-    ),
-    aes(x = x, xend = xend, y = y, yend = yend),
-    label = "Að Úkraínu undanskilinni fengum við samtals 4500 umsóknir árin 2022 - 2023 (uþb 190 á mánuði)",
-    lty = 1,
-    col = "grey10",
-    size = 4,
-    inherit.aes = FALSE,
-    linewidth = linewidth_param,
-    hjust = 0
-  ) +
-  geom_textsegment(
-    data = tibble(
-      y = 70, yend = 70,
-      x = clock::date_build(2015, 4),
-      xend = max(plot_dat$time)
-    ),
-    aes(x = x, xend = xend, y = y, yend = yend),
-    label = "Að Úkraínu og Venesúela undanskildum fengum við samtals 1700 umsóknir árin 2022 - 2023 (uþb 70 á mánuði)",
-    lty = 1,
-    col = "grey10",
-    size = 4,
-    inherit.aes = FALSE,
-    linewidth = linewidth_param,
-    hjust = 0
-  ) +
-  geom_textvline(
-    xintercept = clock::date_build(2023, 3, 15),
-    label = "Fyrri útlendingalög samþykkt",
-    hjust = 0.95,
-    lty = 2,
-    col = "grey0",
-    size = text_size_param,
-    inherit.aes = FALSE,
-    linewidth = text_linewidth_param,
-    hjust = 0
-  ) +
-  geom_textvline(
-    xintercept = clock::date_build(2024, 6, 14),
-    label = "Seinni útlendingalög samþykkt",
-    hjust = 0.95,
-    lty = 2,
-    col = "grey0",
-    size = text_size_param,
-    inherit.aes = FALSE,
-    linewidth = text_linewidth_param,
-    hjust = 0
   ) +
   scale_x_date(
     breaks = breaks_width("year"),
@@ -248,10 +234,14 @@ p <- plot_dat |>
     )
   )
 
+for (sub_text in text_list) {
+  p <- p + plot_text(sub_text)
+}
+
 p
 
 ggsave(
   plot = p,
-  filename = "Figures/monthly_applicants_lineplot_by_country.png",
+  filename = "Figures/venezuela_story.png",
   width = 8, height = 0.5 * 8, scale = 1.9
 )

@@ -83,14 +83,12 @@ p1 <- plot_dat |>
       "en þeim hefur fækkað verulega frá upphafi árs 2023"
     ),
     family = "Lato",
-    colour = "#525252",
-    label.colour = NA,
-    fill = NA
+    colour = "#525252"
   ) +
   annotate(
-    geom = "text",
+    geom = "richtext",
     label = str_c(
-      "Þykkt straumanna er í hlutfalli við\nfjölda umsókna frá viðeigandi landi"
+      "Þykkt straumanna er í <b>hlutfalli við</b><br><b>fjölda umsókna</b> frá viðeigandi landi"
     ),
     x = clock::date_build(2021, 9), y = -60,
     hjust = 1, 
@@ -137,9 +135,9 @@ p2 <- plot_dat |>
     size = 3
   ) +
   annotate(
-    geom = "text",
+    geom = "richtext",
     label = str_c(
-      "Súlurnar sýna heildarfjölda þeirra sem sóttu um hæli viðeigandi mánuð\n",
+      "Súlurnar sýna <b>heildarfjölda</b> þeirra sem sóttu um hæli viðkomandi mánuð<br>",
       "Heildarfjöldi mánaðarlegra umsókna er sýndur fyrir ofan nokkrar súlur"
     ),
     x = clock::date_build(2008), y = 300,

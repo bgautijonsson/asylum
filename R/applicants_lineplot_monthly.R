@@ -42,6 +42,7 @@ d <- get_eurostat(
   )
 
 
+
 plot_dat <- d |>
   summarise(
     Samtals = sum(value),
@@ -50,6 +51,17 @@ plot_dat <- d |>
     .by = time
   ) |>
   pivot_longer(c(-time))
+  # bind_rows(
+  #   tribble(
+  #     ~name, ~value,
+  #     "Samtals", 160,
+  #     "Án ÚKR", 87,
+  #     "Án ÚKR og VEN", 47
+  #   ) |> 
+  #     mutate(
+  #       time = clock::date_build(2024, 4)
+  #     )
+  # )
 
 plot_dat |> filter(year(time) %in% 2022:2023) |> mutate(ar = year(time)) |>  count(name, wt = value)
 
